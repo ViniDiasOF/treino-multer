@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Usuários</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Usuários Cadastrados</h1>
+        <a href="/cadastro" class="btn">Novo Cadastro</a>
+        <div id="usuariosList" class="usuarios-grid"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const response = await fetch('/usuarios/listar');
+                const usuarios = await response.json();
+                
+                const usuariosList = document.getElementById('usuariosList');
+                
+                if (usuarios.length === 0) {
+                    usuariosList.innerHTML = '<p>Nenhum usuário cadastrado ainda.</p>';
+                    return;
+                }
+                
+                usuariosList.innerHTML = usuarios.map(usuario => `
+                    <div class="usuario-card">
+                        <img src="${usuario.foto_path}" alt="${usuario.nome}">
+                        <h3>${usuario.nome}</h3>
+                        <p>Cadastrado em: ${new Date(usuario.created_at).toLocaleDateString()}</p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Erro ao carregar usuários:', error);
+                document.getElementById('usuariosList').innerHTML = 
+                    '<p>Erro ao carregar a lista de usuários.</p>';
+            }
+        });
+    </script>
+</body>
+</html>
